@@ -1,0 +1,62 @@
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
+# Load the image
+image_path = "sample.jpg"  # Change the path to your image
+img = cv2.imread(image_path)
+
+# Check if the image is loaded correctly
+if img is None:
+    print("Error: Image not found or failed to load.")
+else:
+    # Convert to grayscale for processing
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # I. Perform an inverse transformation (negative) on the image
+    inverse_image = 255 - gray  # Inverse transformation: 255 - pixel_value
+    
+    # II. Enhance the image using contrast stretching
+    min_pixel = np.min(gray)
+    max_pixel = np.max(gray)
+    contrast_stretched = ((gray - min_pixel) / (max_pixel - min_pixel) * 255).astype(np.uint8)
+    
+    # III. Generate a histogram-equalized image
+    hist_eq_image = cv2.equalizeHist(gray)
+    
+    # IV. Detect edges in the image using Canny edge detection
+    edges = cv2.Canny(gray, 100, 200)  # You can adjust the thresholds (100, 200) for better edge detection
+
+    # Display all results
+    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+
+    # Original Image
+    axes[0, 0].imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    axes[0, 0].set_title("Original Image")
+    axes[0, 0].axis("off")
+
+    # Inverse Image
+    axes[0, 1].imshow(inverse_image, cmap="gray")
+    axes[0, 1].set_title("Inverse Transformation")
+    axes[0, 1].axis("off")
+
+    # Contrast Stretched Image
+    axes[0, 2].imshow(contrast_stretched, cmap="gray")
+    axes[0, 2].set_title("Contrast Stretching")
+    axes[0, 2].axis("off")
+
+    # Histogram Equalized Image
+    axes[1, 0].imshow(hist_eq_image, cmap="gray")
+    axes[1, 0].set_title("Histogram Equalization")
+    axes[1, 0].axis("off")
+
+    # Edge Detection (Canny)
+    axes[1, 1].imshow(edges, cmap="gray")
+    axes[1, 1].set_title("Edge Detection (Canny)")
+    axes[1, 1].axis("off")
+
+    # Placeholder for any additional result (optional)
+    axes[1, 2].axis("off")
+
+    plt.tight_layout()
+    plt.show()
