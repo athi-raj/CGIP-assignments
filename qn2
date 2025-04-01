@@ -1,62 +1,48 @@
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 
 # Load the image
-image_path = "sample.jpg"  # Change the path to your image
+image_path = "/mnt/data/image.png"
 img = cv2.imread(image_path)
 
-# Check if the image is loaded correctly
-if img is None:
-    print("Error: Image not found or failed to load.")
-else:
-    # Convert to grayscale for processing
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# Convert to grayscale
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # I. Perform an inverse transformation (negative) on the image
-    inverse_image = 255 - gray  # Inverse transformation: 255 - pixel_value
-    
-    # II. Enhance the image using contrast stretching
-    min_pixel = np.min(gray)
-    max_pixel = np.max(gray)
-    contrast_stretched = ((gray - min_pixel) / (max_pixel - min_pixel) * 255).astype(np.uint8)
-    
-    # III. Generate a histogram-equalized image
-    hist_eq_image = cv2.equalizeHist(gray)
-    
-    # IV. Detect edges in the image using Canny edge detection
-    edges = cv2.Canny(gray, 100, 200)  # You can adjust the thresholds (100, 200) for better edge detection
+# 1. Inverse Transformation
+inverse_img = cv2.bitwise_not(gray)
 
-    # Display all results
-    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+# 2. Contrast Stretching
+min_val, max_val = np.min(gray), np.max(gray)
+contrast_stretched = ((gray - min_val) / (max_val - min_val) * 255).astype(np.uint8)
 
-    # Original Image
-    axes[0, 0].imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    axes[0, 0].set_title("Original Image")
-    axes[0, 0].axis("off")
+# 3. Histogram Equalization
+hist_eq = cv2.equalizeHist(gray)
 
-    # Inverse Image
-    axes[0, 1].imshow(inverse_image, cmap="gray")
-    axes[0, 1].set_title("Inverse Transformation")
-    axes[0, 1].axis("off")
+# 4. Edge Detection (Canny)
+edges = cv2.Canny(gray, 100, 200)
 
-    # Contrast Stretched Image
-    axes[0, 2].imshow(contrast_stretched, cmap="gray")
-    axes[0, 2].set_title("Contrast Stretching")
-    axes[0, 2].axis("off")
+# Display all results
+fig, axes = plt.subplots(1, 5, figsize=(20, 5))
 
-    # Histogram Equalized Image
-    axes[1, 0].imshow(hist_eq_image, cmap="gray")
-    axes[1, 0].set_title("Histogram Equalization")
-    axes[1, 0].axis("off")
+axes[0].imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+axes[0].set_title("Original Image")
+axes[0].axis("off")
 
-    # Edge Detection (Canny)
-    axes[1, 1].imshow(edges, cmap="gray")
-    axes[1, 1].set_title("Edge Detection (Canny)")
-    axes[1, 1].axis("off")
+axes[1].imshow(inverse_img, cmap="gray")
+axes[1].set_title("Inverse Transformation")
+axes[1].axis("off")
 
-    # Placeholder for any additional result (optional)
-    axes[1, 2].axis("off")
+axes[2].imshow(contrast_stretched, cmap="gray")
+axes[2].set_title("Contrast Stretched")
+axes[2].axis("off")
 
-    plt.tight_layout()
-    plt.show()
+axes[3].imshow(hist_eq, cmap="gray")
+axes[3].set_title("Histogram Equalization")
+axes[3].axis("off")
+
+axes[4].imshow(edges, cmap="gray")
+axes[4].set_title("Edge Detection (Canny)")
+axes[4].axis("off")
+
+plt.show()
